@@ -1,0 +1,12 @@
+fastapi==0.115.12
+uvicorn==0.34.0
+python-multipart==0.0.20
+sqlalchemy==2.0.40
+requests==2.32.3
+pandas==2.2.3
+PyPDF2==3.0.1
+langchain==0.3.23
+langgraph==0.3.28
+langsmith==0.3.30
+python-dotenv==1.1.0
+google-generativeai==0.3.2 

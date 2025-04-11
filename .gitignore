@@ -1,0 +1,4 @@
+.env
+job_screening.db
+package-lock.json
+node_modules

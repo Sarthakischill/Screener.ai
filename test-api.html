@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <button onclick="testAPI()">Test API Connection</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            try {
+                const response = await fetch('http://localhost:8000/job-descriptions/');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = '<h2>Success!</h2>' + 
+                                      '<p>Found ' + data.length + ' job descriptions.</p>' +
+                                      '<pre>' + JSON.stringify(data[0], null, 2) + '</pre>';
+            } catch (error) {
+                resultDiv.innerHTML = '<h2>Error!</h2><p>' + error.message + '</p>';
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html> 
