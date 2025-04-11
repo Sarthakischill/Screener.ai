@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { 
@@ -24,35 +24,45 @@ export default function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
+
+  async function fetchData() {
+    try {
+      // Don't set loading to true when refreshing to avoid flickering
+      if (loading) setLoading(true);
+      
+      // Fetch jobs and candidates count
+      const jobs = await getJobDescriptions();
+      const candidates = await getCandidates();
+      
+      // Fetch actual shortlisted and interview counts
+      const shortlistedCount = await getShortlistedCount();
+      const interviewsCount = await getInterviewsCount();
+      
+      setStats({
+        jobs: jobs.length,
+        candidates: candidates.length,
+        shortlisted: shortlistedCount,
+        interviews: interviewsCount,
+      });
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        // Fetch jobs and candidates count
-        const jobs = await getJobDescriptions();
-        const candidates = await getCandidates();
-        
-        // Fetch actual shortlisted and interview counts
-        const shortlistedCount = await getShortlistedCount();
-        const interviewsCount = await getInterviewsCount();
-        
-        setStats({
-          jobs: jobs.length,
-          candidates: candidates.length,
-          shortlisted: shortlistedCount,
-          interviews: interviewsCount,
-        });
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-        setError('Failed to load dashboard data');
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchData();
-  }, []);
+    
+    // Set up an interval to refresh data every 5 seconds
+    const interval = setInterval(() => {
+      fetchData();
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [location.pathname]);
 
   const statCards = [
     { name: 'Job Descriptions', value: stats.jobs, icon: BriefcaseIcon, color: 'bg-blue-500', path: '/jobs' },
